@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  username String  @unique
+  passwordHash String
+  characters Character[]
+  createdAt  DateTime   @default(now())
+}
+
+model Character {
+  id  Int     @id @default(autoincrement())
+  user   User   @relation(fields: [user_id], references: [id])
+  user_id Int 
+  name  String
+  title String
+  class String
+  stat_str Int @default(0)
+  stat_int Int @default(0)
+  stat_dex Int @default(0)
+  image_big String
+  image_portrait String
+  armor_type String
+  main_weapons String
+  createdAt  DateTime   @default(now())
+  abilities Ability[]
+}
+
+model Ability {
+  id  Int     @id @default(autoincrement())
+  character Character @relation(fields: [character_id], references: [id])
+  character_id Int
+  name String
+  description String
+  type String
+  createdAt  DateTime   @default(now())
+}
