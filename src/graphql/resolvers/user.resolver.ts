@@ -15,14 +15,14 @@ export const usersResolver = {
     user: (_: any, args: any, { userId }: GraphqlContext) => {
       if (!userId)
         throw new AuthenticationError('Invalid Token')
-      return 'hello'
+      return 'hello, valid user!'
     },
     loginUser: (_: any, args: Record<string, any>) => {
 
     }
   },
   Mutation: {
-    createUser: async(_: any, { email, password, username }: UserRegisterArgs) => {
+    createUser: async (_: any, { email, password, username }: UserRegisterArgs) => {
       return createUser({ username, email, password })
     },
   }

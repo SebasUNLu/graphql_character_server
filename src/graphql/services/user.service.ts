@@ -31,9 +31,5 @@ export const createUser = async ({ username, email, password }: UserInput) => {
   })
 
   const token = generateToken(createdUser.id)
-
-  console.log("Usuario: ", createdUser);
-  console.log("Token: ", token);
-
   return token
 }

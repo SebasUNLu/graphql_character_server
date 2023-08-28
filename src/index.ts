@@ -6,6 +6,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs, resolvers } from "./graphql";
 import jwt from "jsonwebtoken";
 import { GraphqlContext } from "./graphql/utils/contextType";
+import { decode } from "punycode";
 
 dotenv.config();
 const app = express();
@@ -34,13 +35,15 @@ const bootstrapServer = async () => {
         const token = req.headers.authorization
         if (!token)
           return { userId: null }
+
         const decoded = jwt.verify(
           token.slice(7),
           secret
-        )
+        ) as GraphqlContext
+        
         console.log("userToken: ", decoded);
 
-        return { userId: decoded }
+        return { userId: decoded.userId }
       } catch (error) {
         console.log("No hubo token");
         return { userId: null }
