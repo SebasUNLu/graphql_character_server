@@ -1,18 +1,39 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken";
 
+const saltRounds = 10
 const prisma = new PrismaClient();
+const secret = process.env.JWT_SECRET as string
 
 interface UserInput {
   username: string,
-  password: string
+  password: string,
+  email: string
 }
 
-export const createUser = async ({ password, username }: UserInput) => {
+const generateToken = (userId: number) => {
+  return jwt.sign({ userId }, secret, { expiresIn: '1h' })
+}
+
+export const createUser = async ({ username, email, password }: UserInput) => {
+  const passwordHash = await bcrypt.hash(password, saltRounds)
+    .then(hash => {
+      return hash
+    })
+
   const createdUser = await prisma.user.create({
     data: {
       username,
-      passwordHash: password
+      passwordHash,
+      email
     }
   })
-  return createdUser
+
+  const token = generateToken(createdUser.id)
+
+  console.log("Usuario: ", createdUser);
+  console.log("Token: ", token);
+
+  return token
 }

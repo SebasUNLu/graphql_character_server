@@ -5,10 +5,9 @@ type User {
 
 type Query {
   user: String
-  register(username: String!, password: String!): User
-  login(username: String!, password: String!): User
+  loginUser(email: String!, password: String!): String
 }
 
 type Mutation {
-  createUser(username: String!, password: String!): User
+  createUser(username: String!, email: String!, password: String!): String
 }
