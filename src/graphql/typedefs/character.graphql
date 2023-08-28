@@ -1,0 +1,17 @@
+type Character {
+  user_id: ID!
+  name: String!
+  title: String
+  class: String
+  stat_str: Int
+  stat_int: Int
+  stat_dex: Int
+  image_big: String
+  image_portrait: String
+  armor_type: String
+  weapon_skills: [String]
+}
+
+type Query {
+  character(name: String!): String
+}
