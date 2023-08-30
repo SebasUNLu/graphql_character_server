@@ -1,7 +1,5 @@
-
 import { createUser, loginUser } from "../services/user.service";
-import { GraphQLError } from 'graphql';
-import { GraphqlContext } from "../utils/contextType";
+import { GraphqlContext } from "../../types/contextType";
 import { AuthenticationError } from "apollo-server";
 
 interface UserRegisterArgs {
@@ -22,13 +20,13 @@ export const usersResolver = {
         throw new AuthenticationError('Invalid Token')
       return 'hello, valid user!'
     },
-    loginUser: (_: any, { email, password }: UserLoginArgs) => {
-      return loginUser({ email, password })
+    loginUser: async (_: any, { email, password }: UserLoginArgs) => {
+      return await loginUser({ email, password })
     }
   },
   Mutation: {
     createUser: async (_: any, { email, password, username }: UserRegisterArgs) => {
-      return createUser({ username, email, password })
+      return await createUser({ username, email, password })
     },
   }
 }

@@ -2,16 +2,32 @@ type Character {
   user_id: ID!
   name: String!
   title: String
-  class: String
+  char_class: String
   stat_str: Int
   stat_int: Int
   stat_dex: Int
   image_big: String
   image_portrait: String
   armor_type: String
-  weapon_skills: [String]
+  main_weapon: String
 }
 
 type Query {
-  character(name: String!): String
+  character(charId: Int!): Character
+  characters: [Character]
+}
+
+type Mutation {
+  createCharacter(
+    name: String!
+    title: String
+    char_class: String
+    stat_str: Int
+    stat_int: Int
+    stat_dex: Int
+    image_big: String
+    image_portrait: String
+    armor_type: String
+    main_weapon: String
+  ): Character
 }

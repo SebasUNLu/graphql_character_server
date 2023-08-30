@@ -5,7 +5,7 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs, resolvers } from "./graphql";
 import jwt from "jsonwebtoken";
-import { GraphqlContext } from "./graphql/utils/contextType";
+import { GraphqlContext } from "./types/contextType";
 import { decode } from "punycode";
 
 dotenv.config();
@@ -40,8 +40,6 @@ const bootstrapServer = async () => {
           token.slice(7),
           secret
         ) as GraphqlContext
-        
-        console.log("userToken: ", decoded);
 
         return { userId: decoded.userId }
       } catch (error) {

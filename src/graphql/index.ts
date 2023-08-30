@@ -27,6 +27,7 @@ export const resolvers = {
     ...charactersResolver.Query
   },
   Mutation: {
-    ...usersResolver.Mutation
+    ...usersResolver.Mutation,
+    ...charactersResolver.Mutation
   }
 }
