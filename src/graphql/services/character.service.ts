@@ -15,6 +15,16 @@ export const getUserChars = async (userId: number) => {
   return characters
 }
 
+export const getCharacter = async (charId: number) => {
+  const characterFound = await prisma.character.findUnique({
+    where: {
+      id: charId
+    }
+  })
+
+  return characterFound
+}
+
 export const createChar = async (userId: number, inputCharacter: NewInputCharacter) => {
   const user = await prisma.user.findUnique({
     where: {
