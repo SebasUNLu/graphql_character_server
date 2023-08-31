@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Character, NewInputCharacter } from "types";
+import { Character, NewInputCharacter, UpdateInputCharacter } from "types";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +9,8 @@ export const getUserChars = async (userId: number) => {
   const characters = await prisma.character.findMany({
     where: {
       user_id: userId
-    }
+    },
+    include: { abilities: true }
   })
 
   return characters
@@ -19,7 +20,8 @@ export const getCharacter = async (charId: number) => {
   const characterFound = await prisma.character.findUnique({
     where: {
       id: charId
-    }
+    },
+    include: { abilities: true }
   })
 
   return characterFound
@@ -40,4 +42,24 @@ export const createChar = async (userId: number, inputCharacter: NewInputCharact
   })
 
   return newCharacter
+}
+
+export const updateChar = async (userId: number, charId: number, updateInputCharacter: UpdateInputCharacter) => {
+  console.log('Updte char: ', updateInputCharacter);
+
+  const character = await prisma.character.update({
+    where: {
+      id: charId,
+      user_id: userId
+    },
+    data: {
+      ...updateInputCharacter
+    },
+    include: { abilities: true }
+  })
+
+  console.log("Updated char: ", character);
+
+
+  return character;
 }

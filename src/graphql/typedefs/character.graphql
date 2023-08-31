@@ -10,6 +10,7 @@ type Character {
   image_portrait: String
   armor_type: String
   main_weapon: String
+  abilities: [Ability]
 }
 
 type Query {
@@ -20,6 +21,20 @@ type Query {
 type Mutation {
   createCharacter(
     name: String!
+    title: String
+    char_class: String
+    stat_str: Int
+    stat_int: Int
+    stat_dex: Int
+    image_big: String
+    image_portrait: String
+    armor_type: String
+    main_weapon: String
+  ): Character
+
+  updateCharacter(
+    charId: Int!
+    name: String
     title: String
     char_class: String
     stat_str: Int
