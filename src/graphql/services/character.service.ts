@@ -3,8 +3,6 @@ import { Character, NewInputCharacter, UpdateInputCharacter } from "types";
 
 const prisma = new PrismaClient();
 
-
-
 export const getUserChars = async (userId: number) => {
   const characters = await prisma.character.findMany({
     where: {
@@ -45,8 +43,6 @@ export const createChar = async (userId: number, inputCharacter: NewInputCharact
 }
 
 export const updateChar = async (userId: number, charId: number, updateInputCharacter: UpdateInputCharacter) => {
-  console.log('Updte char: ', updateInputCharacter);
-
   const character = await prisma.character.update({
     where: {
       id: charId,
@@ -57,9 +53,5 @@ export const updateChar = async (userId: number, charId: number, updateInputChar
     },
     include: { abilities: true }
   })
-
-  console.log("Updated char: ", character);
-
-
   return character;
 }

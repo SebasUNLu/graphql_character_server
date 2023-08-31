@@ -4,8 +4,17 @@ import { createChar, getCharacter, getUserChars, updateChar } from "../services/
 import { Character, NewInputCharacter, UpdateInputCharacter } from "types";
 
 type UserUpdateCharacter = {
-  charId: number,
-  characterInfo: UpdateInputCharacter
+  charId: number, 
+  name?: string
+  title?: string
+  char_class?: string
+  stat_str?: number
+  stat_int?: number
+  stat_dex?: number
+  image_big?: string
+  image_portrait?: string
+  armor_type?: string
+  main_weapon?: string
 }
 
 export const charactersResolver = {
@@ -27,13 +36,13 @@ export const charactersResolver = {
         throw new AuthenticationError('Invalid Token')
       return await createChar(userId, args)
     },
-    updateCharacter: async (_: any, { charId, characterInfo }: UserUpdateCharacter, { userId }: GraphqlContext) => {
+    updateCharacter: async (_: any, { charId, ...info }: UserUpdateCharacter, { userId }: GraphqlContext) => {
       if (!userId)
         throw new AuthenticationError('Invalid Token')
       console.log("Char Id: ", charId);
-      console.log("Character Info: ", characterInfo);
-      
-      return await updateChar(userId, charId, characterInfo)
+      console.log("Character Info: ", info);
+
+      return await updateChar(userId, charId, info)
     }
   }
 }
