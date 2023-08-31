@@ -45,4 +45,6 @@ type Mutation {
     armor_type: String
     main_weapon: String
   ): Character
+
+  deleteCharacter(charId: Int!): Character
 }

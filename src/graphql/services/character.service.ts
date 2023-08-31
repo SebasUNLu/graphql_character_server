@@ -55,3 +55,25 @@ export const updateChar = async (userId: number, charId: number, updateInputChar
   })
   return character;
 }
+
+export const deleteChar = async (userId: number, charId: number) => {
+  console.log(userId);
+  console.log(charId);
+  
+  const foundChar = await prisma.character.findUnique({
+    where: {
+      id: charId,
+      user_id: userId
+    }
+  })
+  console.log(foundChar);
+
+  const deletedCharacter = await prisma.character.delete({
+    where: {
+      id: charId,
+      user_id: userId
+    }
+  })
+
+  return deletedCharacter;
+}
