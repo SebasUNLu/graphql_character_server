@@ -2,6 +2,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import { usersResolver } from "./resolvers/user.resolver";
 import { charactersResolver } from "./resolvers/character.resolver";
+import { abilityResolver } from "./resolvers/ability.resolver";
 
 const userTypes = readFileSync(path.join(__dirname, './typedefs/user.graphql'), {
   encoding: 'utf-8'
@@ -24,10 +25,12 @@ export const typeDefs = `
 export const resolvers = {
   Query: {
     ...usersResolver.Query,
-    ...charactersResolver.Query
+    ...charactersResolver.Query,
+    ...abilityResolver.Query
   },
   Mutation: {
     ...usersResolver.Mutation,
-    ...charactersResolver.Mutation
+    ...charactersResolver.Mutation,
+    ...abilityResolver.Mutation
   }
 }

@@ -4,3 +4,26 @@ type Ability {
   description: String
   type: String
 }
+
+type Query {
+  ability(charId: number!, abilityId: number!): Ability
+  abilities(charId: number!): [Ability]
+}
+
+type Mutation {
+  addAbility(
+    charId: number!
+    name: String!
+    description: String
+    type: String
+  ): Ability
+
+  updateAbility(
+    charId: number!
+    name: String
+    description: String
+    type: String
+  ): Ability
+
+  deleteAbility(charId: String!, abilityId: String!): Ability
+}
