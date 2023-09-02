@@ -42,7 +42,7 @@ model Ability {
   character Character @relation(fields: [character_id], references: [id])
   character_id Int
   name String
-  description String
-  type String
+  description String?
+  type String?
   createdAt  DateTime   @default(now())
 }

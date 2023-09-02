@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { NewInputAbility } from "types";
 const prisma = new PrismaClient();
 
 export const getAbility = async (user_id: number, character_id: number, ability_id: number) => {
@@ -48,4 +49,31 @@ export const getAbilities = async (user_id: number, character_id: number) => {
   if (!foundCharacter)
     throw new Error("Character not found")
   return foundCharacter.abilities
+}
+
+export const addAbility = async (user_id: number, newAbilityInfo: NewInputAbility) => {
+  const { character_id, name, description, type } = newAbilityInfo;
+
+  const foundCharacter = await prisma.character.findUnique({
+    where: {
+      user_id,
+      id: character_id
+    },
+    include: {
+      abilities: true
+    }
+  })
+  if (!foundCharacter)
+    throw new Error("Character not found")
+
+  const newAbility = prisma.ability.create({
+    data: {
+      character_id,
+      name,
+      description,
+      type
+    }
+  })
+
+  return newAbility
 }
