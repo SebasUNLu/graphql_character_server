@@ -99,3 +99,18 @@ export const updateAbility = async (user_id: number, updateAbilityInfo: UpdateIn
 
   return updatedAbility
 }
+
+export const deleteAbility = async (user_id: number, character_id: number, ability_id: number) => {
+  const deletedAbility = await prisma.ability.delete({
+    where: {
+      id: ability_id,
+      character_id,
+      character: {
+        id: character_id,
+        user_id
+      }
+    }
+  })
+
+  return deletedAbility
+}
