@@ -64,6 +64,7 @@ export interface NewInputAbility {
 
 export interface UpdateInputAbility {
   character_id: number
+  ability_id: number
   name?: string
   description?: string
   type?: string

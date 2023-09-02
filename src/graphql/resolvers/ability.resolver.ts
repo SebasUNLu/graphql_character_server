@@ -1,6 +1,6 @@
 import { GraphqlContext } from "../../types/contextType";
 import { checkIfUser } from "../utils/cheIfUser";
-import { addAbility, getAbilities, getAbility } from "../services/ability.service";
+import { addAbility, getAbilities, getAbility, updateAbility } from "../services/ability.service";
 import { NewInputAbility, UpdateInputAbility } from "types";
 
 export const abilityResolver = {
@@ -24,9 +24,9 @@ export const abilityResolver = {
       const validatedId = await checkIfUser(userId)
       return await addAbility(validatedId, args)
     },
-    updateAbility: async (_: any, { }: UpdateInputAbility, { userId }: GraphqlContext) => {
+    updateAbility: async (_: any, args: UpdateInputAbility, { userId }: GraphqlContext) => {
       const validatedId = await checkIfUser(userId)
-
+      return await updateAbility(validatedId, args)
     },
     deleteAbility: async (_: any, {
 

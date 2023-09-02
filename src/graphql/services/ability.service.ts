@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { NewInputAbility } from "types";
+import { NewInputAbility, UpdateInputAbility } from "types";
 const prisma = new PrismaClient();
 
 export const getAbility = async (user_id: number, character_id: number, ability_id: number) => {
@@ -76,4 +76,26 @@ export const addAbility = async (user_id: number, newAbilityInfo: NewInputAbilit
   })
 
   return newAbility
+}
+
+export const updateAbility = async (user_id: number, updateAbilityInfo: UpdateInputAbility) => {
+  const { ability_id, character_id, name, description, type } = updateAbilityInfo;
+
+  const updatedAbility = await prisma.ability.update({
+    where: {
+      id: ability_id,
+      character_id,
+      character: {
+        id: character_id,
+        user_id
+      }
+    },
+    data: {
+      name,
+      description,
+      type
+    }
+  })
+
+  return updatedAbility
 }
