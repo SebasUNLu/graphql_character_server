@@ -54,3 +54,17 @@ export interface UpdateInputCharacter {
   armor_type?: string
   main_weapon?: string
 }
+
+export interface NewInputAbility {
+  character_id: number,
+  name: String
+  description?: String
+  type?: String
+}
+
+export interface UpdateInputAbility {
+  character_id: number
+  name?: String
+  description?: String
+  type?: String
+}

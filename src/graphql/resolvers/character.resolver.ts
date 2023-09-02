@@ -2,6 +2,7 @@ import { AuthenticationError } from "apollo-server"; import { PrismaClient } fro
 import { GraphqlContext } from "../../types/contextType";
 import { createChar, deleteChar, getCharacter, getUserChars, updateChar } from "../services/character.service";
 import { Character, NewInputCharacter, UpdateInputCharacter } from "types";
+import { checkIfUser } from "../utils/cheIfUser";
 
 const prisma = new PrismaClient();
 
@@ -17,21 +18,6 @@ type UserUpdateCharacter = {
   image_portrait?: string
   armor_type?: string
   main_weapon?: string
-}
-
-const checkIfUser = async (userId: number | null) => {
-  console.log("user id: ", userId);
-
-  if (!userId)
-    throw new AuthenticationError('Invalid Token')
-  const foundUser = await prisma.user.findUnique({
-    where: {
-      id: userId
-    }
-  })
-  if (!foundUser)
-    throw new AuthenticationError('Invalid Token')
-  return userId
 }
 
 export const charactersResolver = {

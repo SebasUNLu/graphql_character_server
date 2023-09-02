@@ -6,24 +6,24 @@ type Ability {
 }
 
 type Query {
-  ability(charId: number!, abilityId: number!): Ability
-  abilities(charId: number!): [Ability]
+  ability(character_id: Int!, ability_id: Int!): Ability
+  abilities(character_id: Int!): [Ability]
 }
 
 type Mutation {
   addAbility(
-    charId: number!
+    character_id: Int!
     name: String!
     description: String
     type: String
   ): Ability
 
   updateAbility(
-    charId: number!
+    character_id: Int!
     name: String
     description: String
     type: String
   ): Ability
 
-  deleteAbility(charId: String!, abilityId: String!): Ability
+  deleteAbility(character_id: Int!, ability_id: Int!): Ability
 }
