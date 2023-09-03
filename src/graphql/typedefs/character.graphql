@@ -1,4 +1,5 @@
 type Character {
+  id: ID!
   user_id: ID!
   name: String!
   title: String
