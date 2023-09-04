@@ -3,9 +3,23 @@ type User {
   username: String!
 }
 
+type UserSuccess {
+  user: User!
+  token: String!
+}
+
+interface Error {
+  message: String!
+}
+
+type UserLoginError implements Error {
+  message: String!
+}
+
+union UserLoginResult = UserSuccess | UserLoginError
+
 type Query {
-  user: String
-  loginUser(email: String!, password: String!): String
+  loginUser(email: String!, password: String!): UserLoginResult
 }
 
 type Mutation {

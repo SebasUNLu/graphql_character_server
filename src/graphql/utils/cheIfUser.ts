@@ -4,8 +4,6 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const checkIfUser = async (userId: number | null) => {
-  console.log("user id: ", userId);
-
   if (!userId)
     throw new AuthenticationError('Invalid Token')
   const foundUser = await prisma.user.findUnique({

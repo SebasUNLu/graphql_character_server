@@ -43,7 +43,6 @@ const bootstrapServer = async () => {
 
         return { userId: decoded.userId }
       } catch (error) {
-        console.log("No hubo token");
         return { userId: null }
       }
     }

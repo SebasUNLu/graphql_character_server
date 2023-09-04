@@ -15,11 +15,6 @@ interface UserLoginArgs {
 
 export const usersResolver = {
   Query: {
-    user: (_: any, args: any, { userId }: GraphqlContext) => {
-      if (!userId)
-        throw new AuthenticationError('Invalid Token')
-      return 'hello, valid user!'
-    },
     loginUser: async (_: any, { email, password }: UserLoginArgs) => {
       return await loginUser({ email, password })
     }

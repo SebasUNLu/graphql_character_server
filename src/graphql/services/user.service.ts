@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
 
@@ -15,6 +15,17 @@ interface UserInput {
 interface LoginUserInput {
   email: string,
   password: string
+}
+
+interface UserSuccess {
+  __typename: string,
+  user: User,
+  token: string
+}
+
+interface UserLoginError {
+  __typename: string,
+  message: string
 }
 
 const generateToken = (userId: number) => {
@@ -42,21 +53,40 @@ export const createUser = async ({ username, email, password }: UserInput) => {
   return token
 }
 
-export const loginUser = async ({ email, password }: LoginUserInput) => {
-  const userFound = await prisma.user.findUnique({
-    where: {
-      email
+export const loginUser = async ({ email, password }: LoginUserInput): Promise<UserSuccess | UserLoginError> => {
+  try {
+    const userFound = await prisma.user.findUnique({
+      where: {
+        email
+      }
+
+    })
+    if (!userFound)
+      return {
+        __typename: "UserLoginError",
+        message: "Invalid user or password"
+      }
+
+    const isPassValid = await bcrypt.compare(password, userFound.passwordHash)
+
+    if (!isPassValid)
+      return {
+        __typename: "UserLoginError",
+        message: "Invalid user or password"
+      }
+
+    const token = generateToken(userFound.id)
+
+    return {
+      __typename: "UserSuccess",
+      user: userFound,
+      token
     }
-
-  })
-  if (!userFound)
-    throw new Error('Invalid user or password')
-
-  const isPassValid = await bcrypt.compare(password, userFound.passwordHash)
-
-  if (!isPassValid)
-    throw new Error('Invalid user or password')
-
-  const token = generateToken(userFound.id)
-  return token
+  } catch (error) {
+    console.log(error);
+    return {
+      __typename: "UserLoginError",
+      message: "Hubo un error en el servidor. Vuelva a intentarlo más tarde"
+    }
+  }
 }
