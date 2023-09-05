@@ -1,4 +1,4 @@
-import { PrismaClient, User } from "@prisma/client";
+import { Prisma, PrismaClient, User } from "@prisma/client";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
 
@@ -88,12 +88,21 @@ export const createUser = async ({ username, email, password }: UserInput): Prom
     }
   } catch (error) {
     console.log(error);
-    return {
-      __typename: "UserRegisterInvalidInputError",
-      message: "Hubo un error en el servidor. Vuelva a intentarlo más tarde"
+    switch (true) {
+      case (error instanceof Prisma.PrismaClientKnownRequestError): {
+        return {
+          __typename: "UserRegisterInvalidInputError",
+          emailInvalidInput: "Ya existe una cuenta con ese email"
+        }
+      }
+      default: {
+        return {
+          __typename: "UserRegisterInvalidInputError",
+          message: "Hubo un error en el servidor. Vuelva a intentarlo más tarde"
+        }
+      }
     }
   }
-
 }
 
 export const loginUser = async ({ email, password }: LoginUserInput): Promise<UserSuccess | UserLoginError> => {
