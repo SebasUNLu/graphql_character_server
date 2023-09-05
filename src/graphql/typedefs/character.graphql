@@ -32,6 +32,16 @@ type Query {
   characters: [Character]
 }
 
+type MutationCharacterSuccess {
+  character: Character!
+}
+type CreateCharacterError {
+  message: String!
+}
+union CreateCharacterResult = 
+  MutationCharacterSuccess
+  | CreateCharacterError
+
 type Mutation {
   createCharacter(
     name: String!
@@ -44,7 +54,7 @@ type Mutation {
     image_portrait: String
     armor_type: String
     main_weapon: String
-  ): Character
+  ): CreateCharacterResult
 
   updateCharacter(
     charId: Int!

@@ -54,23 +54,63 @@ export const getCharacter = async (user_id: number, character_id: number) => {
     return buildError("generalError", "Hubo un problema. Inténtelo de nuevo más tarde")
   }
 }
+// --------------------------------------------------------------------------------
 
+// ------------------------------ Create Character ------------------------------
 export const createChar = async (userId: number, inputCharacter: NewInputCharacter) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId
-    }
-  })
+  console.log("----- Create Character -----")
+  try {
+    let { stat_dex, stat_int, stat_str, name } = inputCharacter
+    if (!stat_dex) stat_dex = 0
+    if (!stat_int) stat_int = 0
+    if (!stat_str) stat_str = 0
+    if ((stat_dex < 0) || (stat_int < 0) || (stat_str < 0))
+      return {
+        __typename: "CreateCharacterError",
+        message: "Las estadísticas deben ser 0 o superior."
+      }
 
-  const newCharacter = await prisma.character.create({
-    data: {
-      ...inputCharacter,
-      user: { connect: { id: user?.id } }
-    }
-  })
+    if (name.length < 3)
+      return {
+        __typename: "CreateCharacterError",
+        message: "El nombre debe tener más de 3 caracteres."
+      }
+    console.log("New Character: ", inputCharacter)
 
-  return newCharacter
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+    if (!user)
+      return {
+        __typename: "CreateCharacterError",
+        message: "No se ha encontrado el usuario."
+      }
+    console.log("User", user);
+
+    const newCharacter = await prisma.character.create({
+      data: {
+        ...inputCharacter,
+        user: { connect: { id: user.id } }
+      },
+      include: {
+        abilities: true
+      }
+    })
+    console.log("New Character: ", newCharacter)
+    return {
+      __typename: "MutationCharacterSuccess",
+      character: newCharacter
+    }
+  } catch (error) {
+    return {
+      __typename: "CreateCharacterError",
+      message: "Hubo un problema al crear el personaje."
+    }
+  }
 }
+// --------------------------------------------------------------------------------
 
 export const updateChar = async (userId: number, charId: number, updateInputCharacter: UpdateInputCharacter) => {
   const character = await prisma.character.update({
