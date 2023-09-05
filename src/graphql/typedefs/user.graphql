@@ -8,20 +8,30 @@ type UserSuccess {
   token: String!
 }
 
+# He visto ejemplos que incluyen esta interfaz y otros implementándola
+# Pero no encuentro la razón por la cual hacerlo ¯\_(ツ)_/¯
 interface Error {
   message: String!
 }
 
-type UserLoginError implements Error {
+type UserLoginError {
   message: String!
 }
 
+type UserRegisterInvalidInputError {
+  message: String
+  emailInvalidInput: String
+  passwordInvalidInput: String
+}
+
 union UserLoginResult = UserSuccess | UserLoginError
+
+union UserRegisterResult = UserSuccess | UserRegisterInvalidInputError
 
 type Query {
   loginUser(email: String!, password: String!): UserLoginResult
 }
 
 type Mutation {
-  createUser(username: String!, email: String!, password: String!): String
+  createUser(username: String!, email: String!, password: String!): UserRegisterResult
 }
