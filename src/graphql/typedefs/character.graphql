@@ -14,8 +14,21 @@ type Character {
   abilities: [Ability]
 }
 
+type GetCharacterSuccess {
+  character: Character!
+}
+
+type GetCharacterError {
+  characterNotFoundError: String
+  wrongUserError: String
+  noUserError: String
+  generalError: String
+}
+
+union GetCharacterResult = GetCharacterSuccess | GetCharacterError
+
 type Query {
-  character(charId: Int!): Character
+  character(charId: Int!): GetCharacterResult
   characters: [Character]
 }
 

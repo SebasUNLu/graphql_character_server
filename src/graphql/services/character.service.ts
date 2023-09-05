@@ -3,6 +3,21 @@ import { Character, NewInputCharacter, UpdateInputCharacter } from "types";
 
 const prisma = new PrismaClient();
 
+interface GetCharacterError {
+  __typename: string,
+  characterNotFoundError?: string
+  wrongUserError?: string
+  noUserError?: string
+  generalError?: string
+}
+
+const buildError = (key: keyof GetCharacterError, message: string): GetCharacterError => {
+  return {
+    __typename: "GetCharacterError",
+    [key]: message
+  }
+}
+
 export const getUserChars = async (userId: number) => {
   const characters = await prisma.character.findMany({
     where: {
@@ -14,15 +29,30 @@ export const getUserChars = async (userId: number) => {
   return characters
 }
 
-export const getCharacter = async (charId: number) => {
-  const characterFound = await prisma.character.findUnique({
-    where: {
-      id: charId
-    },
-    include: { abilities: true }
-  })
-
-  return characterFound
+/**
+ * Get a character by ID. It checks if the User is correct.
+ * @param charId 
+ * @returns Character, wrongUser, characterNotFound, generalError
+ */
+export const getCharacter = async (user_id: number, character_id: number) => {
+  try {
+    const characterFound = await prisma.character.findUnique({
+      where: {
+        id: character_id
+      },
+      include: { abilities: true }
+    })
+    if (!characterFound)
+      return buildError("characterNotFoundError", "No se encontró al personaje.")
+    if (characterFound.user_id !== user_id)
+      return buildError("wrongUserError", "No le pertenece el personaje al que está tratando de acceder.")
+    return {
+      __typename: "GetCharacterSuccess",
+      character: characterFound
+    }
+  } catch (error) {
+    return buildError("generalError", "Hubo un problema. Inténtelo de nuevo más tarde")
+  }
 }
 
 export const createChar = async (userId: number, inputCharacter: NewInputCharacter) => {

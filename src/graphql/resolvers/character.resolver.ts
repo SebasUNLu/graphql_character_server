@@ -27,8 +27,8 @@ export const charactersResolver = {
       return await getUserChars(validatedId)
     },
     character: async (_: any, args: { charId: number }, { userId }: GraphqlContext) => {
-      await checkIfUser(userId)
-      return getCharacter(args.charId)
+      const validatedId = await checkIfUser(userId)
+      return await getCharacter(validatedId, args.charId)
     }
   },
   Mutation: {
