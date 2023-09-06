@@ -32,15 +32,40 @@ type Query {
   characters: [Character]
 }
 
+# Success Types
 type MutationCharacterSuccess {
   character: Character!
 }
+
+# Error Types
+type CharacterNotFoundError {
+  message: String!
+}
+type StatNegativeError {
+  message: String!
+}
+type ShortNameError {
+  message: String!
+}
+type DefaultError {
+  message: String!
+}
+
+# Create Character
 type CreateCharacterError {
   message: String!
 }
 union CreateCharacterResult = 
   MutationCharacterSuccess
   | CreateCharacterError
+
+# Update Character
+union UpdateCharacterResult =
+  MutationCharacterSuccess
+  | CharacterNotFoundError
+  | StatNegativeError
+  | ShortNameError
+  | DefaultError
 
 type Mutation {
   createCharacter(
@@ -68,7 +93,7 @@ type Mutation {
     image_portrait: String
     armor_type: String
     main_weapon: String
-  ): Character
+  ): UpdateCharacterResult
 
   deleteCharacter(charId: Int!): Character
 }
