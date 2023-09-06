@@ -3,35 +3,51 @@ type User {
   username: String!
 }
 
+# ---------- Query ----------
+# Success Types
 type UserSuccess {
   user: User!
   token: String!
 }
 
-# He visto ejemplos que incluyen esta interfaz y otros implementándola
-# Pero no encuentro la razón por la cual hacerlo ¯\_(ツ)_/¯
-interface Error {
+# Error Types
+type DefaultError {
   message: String!
 }
-
-type UserLoginError {
+type InvalidInputError {
   message: String!
 }
-
-type UserRegisterInvalidInputError {
-  message: String
-  emailInvalidInput: String
-  passwordInvalidInput: String
-}
-
-union UserLoginResult = UserSuccess | UserLoginError
-
-union UserRegisterResult = UserSuccess | UserRegisterInvalidInputError
+union UserLoginResult = UserSuccess | InvalidInputError | DefaultError
 
 type Query {
   loginUser(email: String!, password: String!): UserLoginResult
 }
 
+# ---------- Mutation ----------
+# Success Types
+
+# Error Types
+type InvalidEmailInputError {
+  message: String!
+}
+type InvalidPasswordInputError {
+  message: String!
+}
+type UniqueEmailconstraint {
+  message: String!
+}
+
+union UserRegisterResult =
+    UserSuccess
+  | InvalidEmailInputError
+  | InvalidPasswordInputError
+  | UniqueEmailconstraint
+  | DefaultError
+
 type Mutation {
-  createUser(username: String!, email: String!, password: String!): UserRegisterResult
+  createUser(
+    username: String!
+    email: String!
+    password: String!
+  ): UserRegisterResult
 }

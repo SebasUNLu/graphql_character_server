@@ -60,16 +60,17 @@ const validateEmail = (email: string): boolean => {
   return true
 }
 
+// ------------------------------ Create Character ------------------------------
 export const createUser = async ({ username, email, password }: UserInput): Promise<UserSuccess | UserRegisterInvalidInputError> => {
   try {
     if (!validateEmail(email))
       return {
-        __typename: "UserRegisterInvalidInputError",
+        __typename: "InvalidEmailInputError",
         emailInvalidInput: "Email must be a valid email address"
       }
     if (!validatePassword(password))
       return {
-        __typename: "UserRegisterInvalidInputError",
+        __typename: "InvalidPasswordInputError",
         passwordInvalidInput: "Invalid password. Must be at least 5 characters long"
       }
     const passwordHash = await hashPassword(password)
@@ -91,37 +92,38 @@ export const createUser = async ({ username, email, password }: UserInput): Prom
     switch (true) {
       case (error instanceof Prisma.PrismaClientKnownRequestError): {
         return {
-          __typename: "UserRegisterInvalidInputError",
+          __typename: "UniqueEmailconstraint",
           emailInvalidInput: "Ya existe una cuenta con ese email"
         }
       }
       default: {
         return {
-          __typename: "UserRegisterInvalidInputError",
+          __typename: "DefaultError",
           message: "Hubo un error en el servidor. Vuelva a intentarlo más tarde"
         }
       }
     }
   }
 }
+// ------------------------------ x ------------------------------
 
+// ------------------------------ Login user ------------------------------
 export const loginUser = async ({ email, password }: LoginUserInput): Promise<UserSuccess | UserLoginError> => {
   try {
     const userFound = await prisma.user.findUnique({
       where: {
         email
       }
-
     })
     if (!userFound)
       return {
-        __typename: "UserLoginError",
+        __typename: "InvalidInputError",
         message: "Invalid user or password"
       }
     const isPassValid = await bcrypt.compare(password, userFound.passwordHash)
     if (!isPassValid)
       return {
-        __typename: "UserLoginError",
+        __typename: "InvalidInputError",
         message: "Invalid user or password"
       }
     const token = generateToken(userFound.id)
@@ -133,8 +135,9 @@ export const loginUser = async ({ email, password }: LoginUserInput): Promise<Us
   } catch (error) {
     console.log(error);
     return {
-      __typename: "UserLoginError",
+      __typename: "DefaultError",
       message: "Hubo un error en el servidor. Vuelva a intentarlo más tarde"
     }
   }
 }
+// ------------------------------ x ------------------------------

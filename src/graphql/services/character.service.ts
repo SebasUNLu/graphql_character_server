@@ -76,7 +76,7 @@ export const createChar = async (userId: number, inputCharacter: NewInputCharact
     }
   } catch (error) {
     return {
-      __typename: "DefaultError",
+      __typename: "CreateCharacterError",
       message: "Hubo un problema al crear el personaje."
     }
   }
