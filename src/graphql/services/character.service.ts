@@ -158,20 +158,38 @@ export const updateChar = async (userId: number, charId: number, updateInputChar
 }
 // ------------------------------ x ------------------------------
 
+// ------------------------------ Delete Character ------------------------------ 
 export const deleteChar = async (userId: number, charId: number) => {
-  const foundChar = await prisma.character.findUnique({
-    where: {
-      id: charId,
-      user_id: userId
+  try {
+    const foundChar = await prisma.character.findUnique({
+      where: {
+        id: charId,
+        user_id: userId
+      }
+    })
+    if(!foundChar){
+      return {
+        __typename: "CharacterNotFoundError",
+        messge: "No se encontró el personaje."
+      }
     }
-  })
-
-  const deletedCharacter = await prisma.character.delete({
-    where: {
-      id: charId,
-      user_id: userId
-    }
-  })
-
-  return deletedCharacter;
+  
+    const deletedCharacter = await prisma.character.delete({
+      where: {
+        id: charId,
+        user_id: userId
+      }
+    })
+  
+    return {
+      __typename: "MutationCharacterSuccess",
+      character: deletedCharacter
+    };
+  } catch (error) {
+    return {
+      __typename: "DefaultError",
+      messge: "Algo."
+    } 
+  }
 }
+// ------------------------------ x ------------------------------

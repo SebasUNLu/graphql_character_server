@@ -67,6 +67,12 @@ union UpdateCharacterResult =
   | ShortNameError
   | DefaultError
 
+# Delete Character
+union DeleteCharacterResult = 
+  MutationCharacterSuccess
+  | CharacterNotFoundError
+  | DefaultError
+
 type Mutation {
   createCharacter(
     name: String!
