@@ -105,5 +105,5 @@ type Mutation {
     main_weapon: String
   ): UpdateCharacterResult
 
-  deleteCharacter(charId: Int!): Character
+  deleteCharacter(charId: Int!): DeleteCharacterResult
 }

@@ -76,7 +76,7 @@ export const createChar = async (userId: number, inputCharacter: NewInputCharact
     }
   } catch (error) {
     return {
-      __typename: "CreateCharacterError",
+      __typename: "DefaultError",
       message: "Hubo un problema al crear el personaje."
     }
   }
@@ -93,13 +93,13 @@ export const updateChar = async (userId: number, charId: number, updateInputChar
       || (stat_str && stat_str < 0)
     ) {
       return {
-        _typename: "StatNegativeError",
+        __typename: "StatNegativeError",
         message: "Las estadísticas de fuerza, inteligencia y destreza no pueden ser menores que 0."
       }
     }
     if (name && name?.length < 3) {
       return {
-        _typename: "ShortNameError",
+        __typename: "ShortNameError",
         message: "El nombre debe tener minimo 3 caracteres."
       }
     }

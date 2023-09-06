@@ -66,12 +66,12 @@ export const createUser = async ({ username, email, password }: UserInput): Prom
     if (!validateEmail(email))
       return {
         __typename: "InvalidEmailInputError",
-        emailInvalidInput: "Email must be a valid email address"
+        message: "Email must be a valid email address"
       }
     if (!validatePassword(password))
       return {
         __typename: "InvalidPasswordInputError",
-        passwordInvalidInput: "Invalid password. Must be at least 5 characters long"
+        message: "Invalid password. Must be at least 5 characters long"
       }
     const passwordHash = await hashPassword(password)
     const createdUser = await prisma.user.create({
@@ -93,7 +93,7 @@ export const createUser = async ({ username, email, password }: UserInput): Prom
       case (error instanceof Prisma.PrismaClientKnownRequestError): {
         return {
           __typename: "UniqueEmailconstraint",
-          emailInvalidInput: "Ya existe una cuenta con ese email"
+          message: "Ya existe una cuenta con ese email"
         }
       }
       default: {
