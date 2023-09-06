@@ -14,24 +14,32 @@ type Character {
   abilities: [Ability]
 }
 
+# ---------- Query ----------
+# Success Types
 type GetCharacterSuccess {
   character: Character!
 }
 
-type GetCharacterError {
-  characterNotFoundError: String
-  wrongUserError: String
-  noUserError: String
-  generalError: String
+# Error Types
+type CharacterNotFoundError {
+  message: String!
+}
+type DefaultError {
+  message: String!
 }
 
-union GetCharacterResult = GetCharacterSuccess | GetCharacterError
+# Get Character
+union GetCharacterResult =
+    GetCharacterSuccess
+  | CharacterNotFoundError
+  | DefaultError
 
 type Query {
   character(charId: Int!): GetCharacterResult
   characters: [Character]
 }
 
+# ---------- Mutation ----------
 # Success Types
 type MutationCharacterSuccess {
   character: Character!
@@ -47,29 +55,25 @@ type StatNegativeError {
 type ShortNameError {
   message: String!
 }
-type DefaultError {
-  message: String!
-}
 
 # Create Character
-type CreateCharacterError {
-  message: String!
-}
-union CreateCharacterResult = 
-  MutationCharacterSuccess
-  | CreateCharacterError
+union CreateCharacterResult =
+    MutationCharacterSuccess
+  | StatNegativeError
+  | ShortNameError
+  | DefaultError
 
 # Update Character
 union UpdateCharacterResult =
-  MutationCharacterSuccess
+    MutationCharacterSuccess
   | CharacterNotFoundError
   | StatNegativeError
   | ShortNameError
   | DefaultError
 
 # Delete Character
-union DeleteCharacterResult = 
-  MutationCharacterSuccess
+union DeleteCharacterResult =
+    MutationCharacterSuccess
   | CharacterNotFoundError
   | DefaultError
 
