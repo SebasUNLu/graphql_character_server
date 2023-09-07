@@ -31,8 +31,8 @@ union GetAbilityResult =
   | AbilityNotFoundError
   | DefaultError
 
-union GetCharactersAbilitiesResult = 
-  GetCharacterAbilitiesSuccess
+union GetCharactersAbilitiesResult =
+    GetCharacterAbilitiesSuccess
   | CharacterNotFoundError
   | DefaultError
 
@@ -41,13 +41,30 @@ type Query {
   abilities(character_id: Int!): GetCharactersAbilitiesResult
 }
 
+# ---------- Mutations ----------
+# Success Types
+type MutationAbilitySuccess {
+  ability: Ability!
+}
+
+# Error Types
+type InvalidAbilityNameError {
+  message: String!
+}
+
+union AddAbilityResult =
+    MutationAbilitySuccess
+  | CharacterNotFoundError
+  | InvalidAbilityNameError
+  | DefaultError
+
 type Mutation {
   addAbility(
     character_id: Int!
     name: String!
     description: String
     type: String
-  ): Ability
+  ): AddAbilityResult
 
   updateAbility(
     character_id: Int!
