@@ -58,6 +58,13 @@ union AddAbilityResult =
   | InvalidAbilityNameError
   | DefaultError
 
+union UpdateAbilityResult =
+    MutationAbilitySuccess
+  | CharacterNotFoundError
+  | AbilityNotFoundError
+  | InvalidAbilityNameError
+  | DefaultError
+
 type Mutation {
   addAbility(
     character_id: Int!
@@ -72,7 +79,7 @@ type Mutation {
     name: String
     description: String
     type: String
-  ): Ability
+  ): UpdateAbilityResult
 
   deleteAbility(character_id: Int!, ability_id: Int!): Ability
 }

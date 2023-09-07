@@ -1,31 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import { NewInputCharacter, UpdateInputCharacter } from "types";
+import { createCharacterQuery, deleteCharacterQuery, getCharacterQuery, getUserCharactersQuery, updateCharacterQuery } from "../utils/queries/character";
 
 const prisma = new PrismaClient();
 
 // ------------------------------ Get User Character ------------------------------
 export const getUserChars = async (userId: number) => {
-  const characters = await prisma.character.findMany({
-    where: {
-      user_id: userId
-    },
-    include: { abilities: true }
-  })
-
-  return characters
+  return await getUserCharactersQuery(userId)
 }
 // ------------------------------ x ------------------------------
 
 // ------------------------------ Get Character ------------------------------
 export const getCharacter = async (user_id: number, character_id: number) => {
   try {
-    const characterFound = await prisma.character.findUnique({
-      where: {
-        id: character_id,
-        user_id
-      },
-      include: { abilities: true }
-    })
+    const characterFound = await getCharacterQuery(user_id, character_id)
     if (!characterFound)
       return {
         __typename: "DefaultError",
@@ -61,15 +49,7 @@ export const createChar = async (userId: number, inputCharacter: NewInputCharact
         __typename: "ShortNameError",
         message: "El nombre debe tener más de 3 caracteres."
       }
-    const newCharacter = await prisma.character.create({
-      data: {
-        ...inputCharacter,
-        user: { connect: { id: userId } }
-      },
-      include: {
-        abilities: true
-      }
-    })
+    const newCharacter = await createCharacterQuery(userId, inputCharacter)
     return {
       __typename: "MutationCharacterSuccess",
       character: newCharacter
@@ -103,30 +83,14 @@ export const updateChar = async (userId: number, charId: number, updateInputChar
         message: "El nombre debe tener minimo 3 caracteres."
       }
     }
-
-    const foundCharacter = await prisma.character.findUnique({
-      where: {
-        id: charId,
-        user_id: userId
-      }
-    })
+    const foundCharacter = await getCharacterQuery(userId, charId)
     if (!foundCharacter)
       return {
         __typename: "CharacterNotFoundError",
         message: `No se ha encontrado al personaje con ID ${charId}.`
       }
 
-    const character = await prisma.character.update({
-      where: {
-        id: charId,
-        user_id: userId
-      },
-      data: {
-        ...updateInputCharacter
-      },
-      include: { abilities: true }
-    })
-
+    const character = await updateCharacterQuery(userId, charId, updateInputCharacter)
     return { __typename: "MutationCharacterSuccess", character };
 
   } catch (error) {
@@ -139,26 +103,14 @@ export const updateChar = async (userId: number, charId: number, updateInputChar
 // ------------------------------ Delete Character ------------------------------ 
 export const deleteChar = async (userId: number, charId: number) => {
   try {
-    const foundChar = await prisma.character.findUnique({
-      where: {
-        id: charId,
-        user_id: userId
-      }
-    })
+    const foundChar = await getCharacterQuery(userId, charId)
     if (!foundChar) {
       return {
         __typename: "CharacterNotFoundError",
         messge: "No se encontró el personaje."
       }
     }
-
-    const deletedCharacter = await prisma.character.delete({
-      where: {
-        id: charId,
-        user_id: userId
-      }
-    })
-
+    const deletedCharacter = await deleteCharacterQuery(userId, charId)
     return {
       __typename: "MutationCharacterSuccess",
       character: deletedCharacter
