@@ -2,47 +2,84 @@ import { PrismaClient } from "@prisma/client";
 import { NewInputAbility, UpdateInputAbility } from "types";
 const prisma = new PrismaClient();
 
+// ------------------------------ Delete Character ------------------------------ 
 export const getAbility = async (user_id: number, character_id: number, ability_id: number) => {
-  const foundCharacter = await prisma.character.findUnique({
-    where: {
-      id: character_id,
-      user_id
-    },
-    include: {
-      abilities: true
+  try {
+    const foundCharacter = await prisma.character.findUnique({
+      where: {
+        id: character_id,
+        user_id
+      },
+      include: {
+        abilities: true
+      }
+    });
+    if (!foundCharacter) {
+      return {
+        __typename: "CharacterNotFoundError",
+        message: `No se encontró al personaje con ID ${character_id}`
+      }
     }
-  });
-  if (!foundCharacter)
-    throw new Error("Character not found")
 
-  const foundAbility = await prisma.ability.findUnique({
-    where: {
-      id: ability_id,
-      character_id
+    const foundAbility = await prisma.ability.findUnique({
+      where: {
+        id: ability_id,
+        character_id
+      }
+    })
+
+    if (!foundAbility) {
+      return {
+        __typename: "AbilityNotFoundError",
+        message: `No se encontró la habilidad con ID ${ability_id}`
+      }
     }
-  })
+    return foundAbility;
 
-  if (!foundAbility)
-    throw new Error("Ability not found")
-
-  return foundAbility;
+  } catch (error) {
+    console.log(error);
+    return {
+      __typename: "DefaultError",
+      message: "Hubo un error."
+    }
+  }
 }
+// ------------------------------ x ------------------------------
 
+// ------------------------------ Get CHarcter Abilities ------------------------------
 export const getAbilities = async (user_id: number, character_id: number) => {
-  const foundCharacter = await prisma.character.findUnique({
-    where: {
-      id: character_id,
-      user_id
-    },
-    include: {
-      abilities: true
+  try {
+    const foundCharacter = await prisma.character.findUnique({
+      where: {
+        id: character_id,
+        user_id
+      },
+      include: {
+        abilities: true
+      }
+    })
+    if (!foundCharacter) {
+      return {
+        __typename: "CharacterNotFoundError",
+        message: `No se ha encontrado al personaje con ID ${character_id}`
+      }
     }
-  })
-  if (!foundCharacter)
-    throw new Error("Character not found")
-  return foundCharacter.abilities
-}
+    return {
+      __typename: "GetCharacterAbilitiesSuccess",
+      abilities: foundCharacter.abilities
+    }
 
+  } catch (error) {
+    console.log(error);
+    return {
+      __typename: "DefaultError",
+      message: "Hubo un error."
+    }
+  }
+}
+// ------------------------------ x ------------------------------
+
+// ------------------------------ Add ABility ------------------------------
 export const addAbility = async (user_id: number, newAbilityInfo: NewInputAbility) => {
   const { character_id, name, description, type } = newAbilityInfo;
 
@@ -69,6 +106,7 @@ export const addAbility = async (user_id: number, newAbilityInfo: NewInputAbilit
 
   return newAbility
 }
+// ------------------------------ x ------------------------------
 
 export const updateAbility = async (user_id: number, updateAbilityInfo: UpdateInputAbility) => {
   const { ability_id, character_id, name, description, type } = updateAbilityInfo;

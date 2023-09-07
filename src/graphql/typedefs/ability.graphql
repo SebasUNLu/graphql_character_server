@@ -5,9 +5,40 @@ type Ability {
   type: String
 }
 
+# ---------- Query ----------
+# Success Types
+type GetAbilitySuccess {
+  abilitiy: Ability
+}
+type GetCharacterAbilitiesSuccess {
+  abilities: [Ability]
+}
+
+# Error Types
+type CharacterNotFoundError {
+  message: String!
+}
+type AbilityNotFoundError {
+  message: String!
+}
+type DefaultError {
+  message: String!
+}
+
+union GetAbilityResult =
+    GetAbilitySuccess
+  | CharacterNotFoundError
+  | AbilityNotFoundError
+  | DefaultError
+
+union GetCharactersAbilitiesResult = 
+  GetCharacterAbilitiesSuccess
+  | CharacterNotFoundError
+  | DefaultError
+
 type Query {
-  ability(character_id: Int!, ability_id: Int!): Ability
-  abilities(character_id: Int!): [Ability]
+  ability(character_id: Int!, ability_id: Int!): GetAbilityResult
+  abilities(character_id: Int!): GetCharactersAbilitiesResult
 }
 
 type Mutation {
