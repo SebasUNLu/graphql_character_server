@@ -45,14 +45,18 @@ type MutationCharacterSuccess {
   character: Character!
 }
 
+interface Error {
+  message: String!
+}
+
 # Error Types
-type CharacterNotFoundError {
+type CharacterNotFoundError implements Error {
   message: String!
 }
-type StatNegativeError {
+type StatNegativeError implements Error {
   message: String!
 }
-type ShortNameError {
+type ShortNameError implements Error {
   message: String!
 }
 
