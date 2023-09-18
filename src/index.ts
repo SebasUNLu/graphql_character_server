@@ -6,7 +6,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs, resolvers } from "./graphql";
 import jwt from "jsonwebtoken";
 import { GraphqlContext } from "./types/contextType";
-import { decode } from "punycode";
+import { AuthenticationError } from "apollo-server";
 
 dotenv.config();
 const app = express();
@@ -15,10 +15,26 @@ const port = process.env.PORT || 4000;
 const bootstrapServer = async () => {
   const server = new ApolloServer<GraphqlContext>({
     typeDefs,
-    resolvers
+    resolvers,
+    formatError: (formattedError, error) => {
+      // Return a different error message
+      if (formattedError.extensions?.code === 'UNAUTHENTICATED') {
+        return {
+          __typename: "Error",
+          message: "Invalid token."
+        }
+      }
+      // Otherwise return the formatted error. This error can also
+      // be manipulated in other ways, as long as it's returned.
+      console.log(formattedError);
+      return {
+        __typename: "Error",
+        message: "Hubo un error"
+      };
+    },
   });
 
-  await server.start();
+  await server.start()
 
   app.use(cors());
   app.use(express.json());
@@ -45,7 +61,7 @@ const bootstrapServer = async () => {
       } catch (error) {
         return { userId: null }
       }
-    }
+    },
   }))
 
   app.get("/", (req, res) => {
