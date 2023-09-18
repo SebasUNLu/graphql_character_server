@@ -16,10 +16,15 @@ const abilityTypes = readFileSync(path.join(__dirname, './typedefs/ability.graph
   encoding: 'utf-8'
 })
 
+const errorTypes = readFileSync(path.join(__dirname, './typedefs/error.graphql'), {
+  encoding: 'utf-8'
+})
+
 export const typeDefs = `
   ${userTypes}
   ${characterTypes}
   ${abilityTypes}
+  ${errorTypes}
 `;
 
 export const resolvers = {

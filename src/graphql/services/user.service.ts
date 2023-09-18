@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
+import { ClientError } from "../../utils/errors/ClientError";
 
 const saltRounds = 10
 const prisma = new PrismaClient();
@@ -64,15 +65,9 @@ const validateEmail = (email: string): boolean => {
 export const createUser = async ({ username, email, password }: UserInput): Promise<UserSuccess | UserRegisterInvalidInputError> => {
   try {
     if (!validateEmail(email))
-      return {
-        __typename: "InvalidEmailInputError",
-        message: "Email must be a valid email address"
-      }
+      throw new ClientError('Email must be a valid email address', "InvalidEmailInputError")
     if (!validatePassword(password))
-      return {
-        __typename: "InvalidPasswordInputError",
-        message: "Invalid password. Must be at least 5 characters long"
-      }
+      throw new ClientError('Invalid password. Must be at least 5 characters long', "InvalidPasswordInputError")
     const passwordHash = await hashPassword(password)
     const createdUser = await prisma.user.create({
       data: {
@@ -91,16 +86,10 @@ export const createUser = async ({ username, email, password }: UserInput): Prom
     console.log(error);
     switch (true) {
       case (error instanceof Prisma.PrismaClientKnownRequestError): {
-        return {
-          __typename: "UniqueEmailconstraint",
-          message: "Ya existe una cuenta con ese email"
-        }
+        throw new ClientError('An account with that mail already exists', "UniqueEmailconstraint")
       }
       default: {
-        return {
-          __typename: "DefaultError",
-          message: "Hubo un error en el servidor. Vuelva a intentarlo más tarde"
-        }
+        throw new ClientError('An error ocurred. Try again later')
       }
     }
   }
@@ -109,35 +98,21 @@ export const createUser = async ({ username, email, password }: UserInput): Prom
 
 // ------------------------------ Login user ------------------------------
 export const loginUser = async ({ email, password }: LoginUserInput): Promise<UserSuccess | UserLoginError> => {
-  try {
-    const userFound = await prisma.user.findUnique({
-      where: {
-        email
-      }
-    })
-    if (!userFound)
-      return {
-        __typename: "InvalidInputError",
-        message: "Invalid user or password"
-      }
-    const isPassValid = await bcrypt.compare(password, userFound.passwordHash)
-    if (!isPassValid)
-      return {
-        __typename: "InvalidInputError",
-        message: "Invalid user or password"
-      }
-    const token = generateToken(userFound.id)
-    return {
-      __typename: "UserSuccess",
-      user: userFound,
-      token
+  const userFound = await prisma.user.findUnique({
+    where: {
+      email
     }
-  } catch (error) {
-    console.log(error);
-    return {
-      __typename: "DefaultError",
-      message: "Hubo un error en el servidor. Vuelva a intentarlo más tarde"
-    }
+  })
+  if (!userFound)
+    throw new ClientError('Invalid user or password', "InvalidInputError")
+  const isPassValid = await bcrypt.compare(password, userFound.passwordHash)
+  if (!isPassValid)
+    throw new ClientError('Invalid user or password', "InvalidInputError")
+  const token = generateToken(userFound.id)
+  return {
+    __typename: "UserSuccess",
+    user: userFound,
+    token
   }
 }
 // ------------------------------ x ------------------------------

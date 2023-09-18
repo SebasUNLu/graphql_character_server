@@ -24,15 +24,13 @@ type GetCharacterSuccess {
 type CharacterNotFoundError {
   message: String!
 }
-type DefaultError {
-  message: String!
-}
 
 # Get Character
 union GetCharacterResult =
     GetCharacterSuccess
   | CharacterNotFoundError
   | DefaultError
+  | InvalidToken
 
 type Query {
   character(charId: Int!): GetCharacterResult
