@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NewInputCharacter, UpdateInputCharacter } from "types";
+
 const prisma = new PrismaClient();
 
 export const getCharacterQuery = async (user_id: number, character_id: number) => {

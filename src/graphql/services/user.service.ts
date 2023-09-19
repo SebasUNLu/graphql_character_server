@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
-import { ClientError } from "../../utils/errors/ClientError";
+import { ThrowClientError } from "../../utils/errors/ClientError";
 
 const saltRounds = 10
 const prisma = new PrismaClient();
@@ -65,9 +65,9 @@ const validateEmail = (email: string): boolean => {
 export const createUser = async ({ username, email, password }: UserInput): Promise<UserSuccess | UserRegisterInvalidInputError> => {
   try {
     if (!validateEmail(email))
-      throw new ClientError('Email must be a valid email address', "InvalidEmailInputError")
+      throw ThrowClientError('Email must be a valid email address', "InvalidEmailInputError")
     if (!validatePassword(password))
-      throw new ClientError('Invalid password. Must be at least 5 characters long', "InvalidPasswordInputError")
+      throw ThrowClientError('Invalid password. Must be at least 5 characters long', "InvalidPasswordInputError")
     const passwordHash = await hashPassword(password)
     const createdUser = await prisma.user.create({
       data: {
@@ -83,13 +83,12 @@ export const createUser = async ({ username, email, password }: UserInput): Prom
       token
     }
   } catch (error) {
-    console.log(error);
     switch (true) {
       case (error instanceof Prisma.PrismaClientKnownRequestError): {
-        throw new ClientError('An account with that mail already exists', "UniqueEmailconstraint")
+        throw ThrowClientError('An account with that mail already exists', "UniqueEmailconstraint")
       }
       default: {
-        throw new ClientError('An error ocurred. Try again later')
+        throw ThrowClientError('An error ocurred. Try again later')
       }
     }
   }
@@ -104,10 +103,10 @@ export const loginUser = async ({ email, password }: LoginUserInput): Promise<Us
     }
   })
   if (!userFound)
-    throw new ClientError('Invalid user or password', "InvalidInputError")
+    throw ThrowClientError('Invalid user or password', "InvalidInputError")
   const isPassValid = await bcrypt.compare(password, userFound.passwordHash)
   if (!isPassValid)
-    throw new ClientError('Invalid user or password', "InvalidInputError")
+    throw ThrowClientError('Invalid user or password', "InvalidInputError")
   const token = generateToken(userFound.id)
   return {
     __typename: "UserSuccess",

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NewInputAbility, UpdateInputAbility } from "types";
+
 const prisma = new PrismaClient();
 
 export const getAbilityQuery = async (character_id: number, ability_id: number) => {

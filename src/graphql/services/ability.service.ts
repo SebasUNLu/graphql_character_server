@@ -2,17 +2,18 @@ import { PrismaClient } from "@prisma/client";
 import { NewInputAbility, UpdateInputAbility } from "types";
 import { getCharacterQuery } from "../utils/queries/character";
 import { createAbilityQuery, deleteAbilityQuery, getAbilityQuery, updateAbilityQuery } from "../utils/queries/ability";
-import { ClientError } from "../../utils/errors/ClientError";
+import { ThrowClientError } from "../../utils/errors/ClientError";
+
 const prisma = new PrismaClient();
 
 // ------------------------------ Delete Character ------------------------------ 
 export const getAbility = async (user_id: number, character_id: number, ability_id: number) => {
   const foundCharacter = await getCharacterQuery(user_id, character_id)
   if (!foundCharacter)
-    throw new ClientError("Character not found", "CharacterNotFoundError")
+    throw ThrowClientError("Character not found", "CharacterNotFoundError")
   const foundAbility = await getAbilityQuery(character_id, ability_id)
   if (!foundAbility)
-    throw new ClientError("Ability not found", "AbilityNotFoundError")
+    throw ThrowClientError("Ability not found", "AbilityNotFoundError")
   return {
     __typename: "GetAbilitySuccess",
     abilitiy: foundAbility
@@ -24,7 +25,7 @@ export const getAbility = async (user_id: number, character_id: number, ability_
 export const getAbilities = async (user_id: number, character_id: number) => {
   const foundCharacter = await getCharacterQuery(user_id, character_id)
   if (!foundCharacter)
-    throw new ClientError("Character not found", "CharacterNotFoundError")
+    throw ThrowClientError("Character not found", "CharacterNotFoundError")
   return {
     __typename: "GetCharacterAbilitiesSuccess",
     abilities: foundCharacter.abilities
@@ -36,10 +37,10 @@ export const getAbilities = async (user_id: number, character_id: number) => {
 export const addAbility = async (user_id: number, newAbilityInfo: NewInputAbility) => {
   const { character_id, name, description, type } = newAbilityInfo;
   if (name.length < 0)
-    throw new ClientError("Ability name must be at least 3 character long", "InvalidAbilityNameError")
+    throw ThrowClientError("Ability name must be at least 3 character long", "InvalidAbilityNameError")
   const foundCharacter = await getCharacterQuery(user_id, character_id)
   if (!foundCharacter)
-    throw new ClientError("Character not found", "CharacterNotFoundError")
+    throw ThrowClientError("Character not found", "CharacterNotFoundError")
   const newAbility = await createAbilityQuery(newAbilityInfo)
   return {
     __typename: "MutationAbilitySuccess",
@@ -52,13 +53,13 @@ export const addAbility = async (user_id: number, newAbilityInfo: NewInputAbilit
 export const updateAbility = async (user_id: number, updateAbilityInfo: UpdateInputAbility) => {
   const { ability_id, character_id, name, description, type } = updateAbilityInfo;
   if (name && name.length < 0)
-    throw new ClientError("Ability name must be at least 3 character long", "InvalidAbilityNameError")
+    throw ThrowClientError("Ability name must be at least 3 character long", "InvalidAbilityNameError")
   const foundCharacter = await getCharacterQuery(user_id, character_id)
   if (!foundCharacter)
-    throw new ClientError("Character not found", "CharacterNotFoundError")
+    throw ThrowClientError("Character not found", "CharacterNotFoundError")
   const updatedAbility = await updateAbilityQuery(user_id, updateAbilityInfo)
   if (!updatedAbility)
-    throw new ClientError("Ability not found", "AbilityNotFoundError")
+    throw ThrowClientError("Ability not found", "AbilityNotFoundError")
   return {
     __typename: "MutationAbilitySuccess",
     ability: updatedAbility
