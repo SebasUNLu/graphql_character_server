@@ -2,6 +2,6 @@ interface Error {
   message: String!
 }
 
-type InvalidToken implements Error {
+type InvalidTokenError implements Error {
   message: String!
 }
