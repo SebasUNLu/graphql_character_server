@@ -2,143 +2,73 @@ import { PrismaClient } from "@prisma/client";
 import { NewInputAbility, UpdateInputAbility } from "types";
 import { getCharacterQuery } from "../utils/queries/character";
 import { createAbilityQuery, deleteAbilityQuery, getAbilityQuery, updateAbilityQuery } from "../utils/queries/ability";
+import { ClientError } from "../../utils/errors/ClientError";
 const prisma = new PrismaClient();
 
 // ------------------------------ Delete Character ------------------------------ 
 export const getAbility = async (user_id: number, character_id: number, ability_id: number) => {
-  try {
-    const foundCharacter = await getCharacterQuery(user_id, character_id)
-    if (!foundCharacter) {
-      return {
-        __typename: "CharacterNotFoundError",
-        message: `No se encontró al personaje con ID ${character_id}`
-      }
-    }
-    const foundAbility = await getAbilityQuery(character_id, ability_id)
-    if (!foundAbility) {
-      return {
-        __typename: "AbilityNotFoundError",
-        message: `No se encontró la habilidad con ID ${ability_id}`
-      }
-    }
-    return foundAbility;
-  } catch (error) {
-    console.log(error);
-    return {
-      __typename: "DefaultError",
-      message: "Hubo un error."
-    }
-  }
+  const foundCharacter = await getCharacterQuery(user_id, character_id)
+  if (!foundCharacter)
+    throw new ClientError("Character not found", "CharacterNotFoundError")
+  const foundAbility = await getAbilityQuery(character_id, ability_id)
+  if (!foundAbility)
+    throw new ClientError("Ability not found", "AbilityNotFoundError")
+  return {
+    __typename: "GetAbilitySuccess",
+    abilitiy: foundAbility
+  };
 }
 // ------------------------------ x ------------------------------
 
-// ------------------------------ Get CHarcter Abilities ------------------------------
+// ------------------------------ Get Character Abilities ------------------------------
 export const getAbilities = async (user_id: number, character_id: number) => {
-  try {
-    const foundCharacter = await getCharacterQuery(user_id, character_id)
-    if (!foundCharacter) {
-      return {
-        __typename: "CharacterNotFoundError",
-        message: `No se ha encontrado al personaje con ID ${character_id}`
-      }
-    }
-    return {
-      __typename: "GetCharacterAbilitiesSuccess",
-      abilities: foundCharacter.abilities
-    }
-
-  } catch (error) {
-    console.log(error);
-    return {
-      __typename: "DefaultError",
-      message: "Hubo un error."
-    }
+  const foundCharacter = await getCharacterQuery(user_id, character_id)
+  if (!foundCharacter)
+    throw new ClientError("Character not found", "CharacterNotFoundError")
+  return {
+    __typename: "GetCharacterAbilitiesSuccess",
+    abilities: foundCharacter.abilities
   }
 }
 // ------------------------------ x ------------------------------
 
 // ------------------------------ Add ABility ------------------------------
 export const addAbility = async (user_id: number, newAbilityInfo: NewInputAbility) => {
-  try {
-    const { character_id, name, description, type } = newAbilityInfo;
-    if (name.length < 0)
-      return {
-        __typename: "InvalidAbilityNameError",
-        message: `El nombre de la habilidad debe tener almenos 3 caracteres.`
-      }
-    const foundCharacter = await getCharacterQuery(user_id, character_id)
-    if (!foundCharacter)
-      return {
-        __typename: "CharacterNotFoundError",
-        message: `No se ha encontrado al personaje de ID ${character_id}`
-      }
-
-    const newAbility = await createAbilityQuery(newAbilityInfo)
-    return {
-      __typename: "MutationAbilitySuccess",
-      ability: newAbility
-    }
-  } catch (error) {
-    console.log(error);
-    return {
-      __typename: "DefaultError",
-      message: "Hubo un error."
-    }
+  const { character_id, name, description, type } = newAbilityInfo;
+  if (name.length < 0)
+    throw new ClientError("Ability name must be at least 3 character long", "InvalidAbilityNameError")
+  const foundCharacter = await getCharacterQuery(user_id, character_id)
+  if (!foundCharacter)
+    throw new ClientError("Character not found", "CharacterNotFoundError")
+  const newAbility = await createAbilityQuery(newAbilityInfo)
+  return {
+    __typename: "MutationAbilitySuccess",
+    ability: newAbility
   }
 }
 // ------------------------------ x ------------------------------
 
 // ------------------------------ Update Ability ------------------------------
 export const updateAbility = async (user_id: number, updateAbilityInfo: UpdateInputAbility) => {
-  try {
-    const { ability_id, character_id, name, description, type } = updateAbilityInfo;
-    if (name && name.length < 0)
-      return {
-        __typename: "InvalidAbilityNameError",
-        message: `El nombre de la habilidad debe tener almenos 3 caracteres.`
-      }
-    const foundCharacter = await getCharacterQuery(user_id, character_id)
-    if (!foundCharacter)
-      return {
-        __typename: "CharacterNotFoundError",
-        message: `No se ha encontrado al personaje de ID ${character_id}`
-      }
-
-    const updatedAbility = await updateAbilityQuery(user_id, updateAbilityInfo)
-    if (!updatedAbility)
-      return {
-        __typename: "AbilityNotFoundError",
-        message: `No se encontró la habilidad con el ID ${ability_id}`
-      }
-
-    return {
-      __typename: "MutationAbilitySuccess",
-      ability: updatedAbility
-    }
-
-  } catch (error) {
-    console.log(error);
-    return {
-      __typename: "DefaultError",
-      message: "Hubo un error."
-    }
+  const { ability_id, character_id, name, description, type } = updateAbilityInfo;
+  if (name && name.length < 0)
+    throw new ClientError("Ability name must be at least 3 character long", "InvalidAbilityNameError")
+  const foundCharacter = await getCharacterQuery(user_id, character_id)
+  if (!foundCharacter)
+    throw new ClientError("Character not found", "CharacterNotFoundError")
+  const updatedAbility = await updateAbilityQuery(user_id, updateAbilityInfo)
+  if (!updatedAbility)
+    throw new ClientError("Ability not found", "AbilityNotFoundError")
+  return {
+    __typename: "MutationAbilitySuccess",
+    ability: updatedAbility
   }
 }
 // ------------------------------ x ------------------------------
 
 // ------------------------------ Delete Ability ------------------------------
 export const deleteAbility = async (user_id: number, character_id: number, ability_id: number) => {
-  try {
-    // Buscar personaje
-    const deletedAbility = await deleteAbilityQuery(user_id, character_id, ability_id)
-    // preguntar por habilidad borrada
-    return deletedAbility
-  } catch (error) {
-    console.log(error);
-    return {
-      __typename: "DefaultError",
-      message: "Hubo un error."
-    }
-  }
+  const deletedAbility = await deleteAbilityQuery(user_id, character_id, ability_id)
+  return deletedAbility
 }
 // ------------------------------ x ------------------------------
