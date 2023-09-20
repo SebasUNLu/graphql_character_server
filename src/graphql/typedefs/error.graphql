@@ -1,0 +1,7 @@
+interface Error {
+  message: String!
+}
+
+type InvalidTokenError implements Error {
+  message: String!
+}

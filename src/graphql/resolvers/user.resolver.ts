@@ -1,6 +1,4 @@
 import { createUser, loginUser } from "../services/user.service";
-import { GraphqlContext } from "../../types/contextType";
-import { AuthenticationError } from "apollo-server";
 
 interface UserRegisterArgs {
   username: string,

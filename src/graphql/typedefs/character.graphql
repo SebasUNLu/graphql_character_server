@@ -24,15 +24,12 @@ type GetCharacterSuccess {
 type CharacterNotFoundError {
   message: String!
 }
-type DefaultError {
-  message: String!
-}
 
-# Get Character
+# Union Types
 union GetCharacterResult =
     GetCharacterSuccess
   | CharacterNotFoundError
-  | DefaultError
+  | InvalidTokenError
 
 type Query {
   character(charId: Int!): GetCharacterResult
@@ -45,41 +42,35 @@ type MutationCharacterSuccess {
   character: Character!
 }
 
-interface Error {
-  message: String!
-}
-
 # Error Types
-type CharacterNotFoundError implements Error {
+type InputStatError implements Error {
   message: String!
 }
-type StatNegativeError implements Error {
-  message: String!
-}
-type ShortNameError implements Error {
+type InputNameError implements Error {
   message: String!
 }
 
+# Union Types
 # Create Character
 union CreateCharacterResult =
     MutationCharacterSuccess
-  | StatNegativeError
-  | ShortNameError
-  | DefaultError
+  | InputStatError
+  | InputNameError
+  | InvalidTokenError
 
 # Update Character
 union UpdateCharacterResult =
     MutationCharacterSuccess
   | CharacterNotFoundError
-  | StatNegativeError
-  | ShortNameError
-  | DefaultError
+  | InputStatError
+  | InputNameError
+  | InvalidTokenError
 
 # Delete Character
 union DeleteCharacterResult =
     MutationCharacterSuccess
   | CharacterNotFoundError
-  | DefaultError
+  | InvalidTokenError
 
 type Mutation {
   createCharacter(

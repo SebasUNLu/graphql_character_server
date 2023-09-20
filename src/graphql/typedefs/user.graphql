@@ -11,13 +11,12 @@ type UserSuccess {
 }
 
 # Error Types
-type DefaultError {
+type InvalidInputError implements Error {
   message: String!
 }
-type InvalidInputError {
-  message: String!
-}
-union UserLoginResult = UserSuccess | InvalidInputError | DefaultError
+
+# Union Types
+union UserLoginResult = UserSuccess | InvalidInputError
 
 type Query {
   loginUser(email: String!, password: String!): UserLoginResult
@@ -27,22 +26,22 @@ type Query {
 # Success Types
 
 # Error Types
-type InvalidEmailInputError {
+type InvalidEmailInputError implements Error {
   message: String!
 }
-type InvalidPasswordInputError {
+type InvalidPasswordInputError implements Error {
   message: String!
 }
-type UniqueEmailconstraint {
+type UniqueEmailconstraint implements Error {
   message: String!
 }
 
+# Union Types
 union UserRegisterResult =
     UserSuccess
   | InvalidEmailInputError
   | InvalidPasswordInputError
   | UniqueEmailconstraint
-  | DefaultError
 
 type Mutation {
   createUser(

@@ -1,7 +1,7 @@
-import { AuthenticationError } from "apollo-server"; import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { GraphqlContext } from "../../types/contextType";
 import { createChar, deleteChar, getCharacter, getUserChars, updateChar } from "../services/character.service";
-import { Character, NewInputCharacter, UpdateInputCharacter } from "types";
+import { NewInputCharacter } from "types";
 import { checkIfUser } from "../utils/cheIfUser";
 
 const prisma = new PrismaClient();

@@ -15,26 +15,24 @@ type GetCharacterAbilitiesSuccess {
 }
 
 # Error Types
-type CharacterNotFoundError {
+type CharacterNotFoundError implements Error {
   message: String!
 }
-type AbilityNotFoundError {
-  message: String!
-}
-type DefaultError {
+type AbilityNotFoundError implements Error {
   message: String!
 }
 
+# Union Types
 union GetAbilityResult =
     GetAbilitySuccess
   | CharacterNotFoundError
   | AbilityNotFoundError
-  | DefaultError
+  | InvalidTokenError
 
 union GetCharactersAbilitiesResult =
     GetCharacterAbilitiesSuccess
   | CharacterNotFoundError
-  | DefaultError
+  | InvalidTokenError
 
 type Query {
   ability(character_id: Int!, ability_id: Int!): GetAbilityResult
@@ -52,18 +50,19 @@ type InvalidAbilityNameError {
   message: String!
 }
 
+# Union Types
 union AddAbilityResult =
     MutationAbilitySuccess
   | CharacterNotFoundError
   | InvalidAbilityNameError
-  | DefaultError
+  | InvalidTokenError
 
 union UpdateAbilityResult =
     MutationAbilitySuccess
   | CharacterNotFoundError
   | AbilityNotFoundError
   | InvalidAbilityNameError
-  | DefaultError
+  | InvalidTokenError
 
 type Mutation {
   addAbility(

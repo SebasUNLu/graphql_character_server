@@ -1,17 +1,17 @@
-import { AuthenticationError } from "apollo-server";
 import { PrismaClient } from "@prisma/client";
+import { ThrowClientError } from "../../utils/errors/ClientError";
 
 const prisma = new PrismaClient();
 
 export const checkIfUser = async (userId: number | null) => {
   if (!userId)
-    throw new AuthenticationError('Invalid Token')
+    throw ThrowClientError('Invalid Token', "InvalidTokenError")
   const foundUser = await prisma.user.findUnique({
     where: {
       id: userId
     }
   })
   if (!foundUser)
-    throw new AuthenticationError('Invalid Token')
+    throw ThrowClientError('Invalid Token', "InvalidTokenError")
   return userId
 }
